@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alina Would Say...</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Alina Would Say...">
+    <meta name="description" content="Alina always knows how to turn lemons into lemonade and help you see the best in every situation. Get Alina's perspective when you need it most.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://alina.wouldsay.com/">
+    <meta property="og:title" content="Alina Would Say...">
+    <meta property="og:description" content="Alina always knows how to turn lemons into lemonade and help you see the best in every situation. Get Alina's perspective when you need it most.">
+    <meta property="og:image" content="https://alina.wouldsay.com/public/lemons.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://alina.wouldsay.com/">
+    <meta property="twitter:title" content="Alina Would Say...">
+    <meta property="twitter:description" content="Alina always knows how to turn lemons into lemonade and help you see the best in every situation. Get Alina's perspective when you need it most.">
+    <meta property="twitter:image" content="https://alina.wouldsay.com/public/lemons.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/public/lemons.png">
+
+    <style>
+        /* Rest of your existing styles remain the same */
+    </style>
+</head>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f4f8;
+        line-height: 1.6;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+        color: #2d3748;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+    }
+    .subtitle {
+        color: #4a5568;
+        font-size: 1.1em;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+    #chat-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #message-input {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1em;
+        resize: vertical;
+    }
+    #message-input:focus {
+        outline: none;
+        border-color: #4299e1;
+    }
+    button {
+        background-color: #4299e1;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    button:hover {
+        background-color: #3182ce;
+    }
+    #response {
+        margin-top: 25px;
+        padding: 20px;
+        background-color: #f7fafc;
+        border-radius: 8px;
+        /* border-left: 4px solid #4299e1; */
+        white-space: pre-wrap;
+    }
+    .loading {
+        color: #718096;
+        font-style: italic;
+    }
+    .star {
+        color: #f6e05e;
+        font-size: 1.2em;
+    }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>Alina Would Say... <span class="star">⭐️</span></h1>
+    <p class="subtitle">
+        Alina always knows how to turn lemons into lemonade, to find the bright side and help you see the best in every situation. 
+        But if the real Alina isn't available to share wisdom, share your challenge with the Alina bot.
+    </p>
+</div>
+
+<div id="chat-container">
+    <textarea 
+        id="message-input" 
+        rows="4" 
+        placeholder="Share your situation or challenge here..."
+    ></textarea>
+    <button onclick="sendMessage()">Get Alina's Wisdom</button>
+    <div id="response"></div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const messageInput = document.getElementById('message-input');
+        const responseDiv = document.getElementById('response');
+        const message = messageInput.value;
+
+        if (!message) return;
+
+        responseDiv.textContent = 'Alina is thinking... ⭐️';
+        responseDiv.classList.add('loading');
+
+        try {
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+            responseDiv.classList.remove('loading');
+            
+            if (data.error) {
+                responseDiv.textContent = `Error: ${data.error}`;
+            } else {
+                responseDiv.textContent = data.response;
+            }
+        } catch (error) {
+            responseDiv.classList.remove('loading');
+            responseDiv.textContent = `Error: ${error.message}`;
+        }
+    }
+
+    // Allow Enter key to send message
+    document.getElementById('message-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>
